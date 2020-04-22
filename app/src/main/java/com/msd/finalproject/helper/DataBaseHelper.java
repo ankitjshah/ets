@@ -28,11 +28,19 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String USER_COL2 = "username";
     public static final String USER_COL3 = "password";
 
+    // Activity Table and it's columns
     public static final String ACTIVITY_TABLE_NAME = "Activity";
     public static final String ACTIVITY_COL1 = "id";
     public static final String ACTIVITY_COL2 = "userId";
     public static final String ACTIVITY_COL3 = "imagePath";
     public static final String ACTIVITY_COL4 = "createdAt";
+
+    // Coordinates Table and it's columns
+    public static final String COORDIATES_TABLE_NAME = "Coordinates";
+    public static final String COORDIATES_COL1 = "id";
+    public static final String COORDIATES_COL2 = "activityId";
+    public static final String COORDIATES_COL3 = "longitude";
+    public static final String COORDIATES_COL4 = "latitude";
 
     // Initialising create user table query
     public static final String CREATE_USER_TABLE = "create table " + USER_TABLE_NAME + "(" + USER_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -43,11 +51,19 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             ACTIVITY_COL3 + " TEXT NOT NULL, " + ACTIVITY_COL4 + " TEXT NOT NULL," + ACTIVITY_COL2 + " INTEGER NOT NULL, " +
             "FOREIGN KEY (" + ACTIVITY_COL2 + ") REFERENCES " + USER_TABLE_NAME + "(" + USER_COL1 + "));";
 
+    // Initialising create activity table query
+    public static final String CREATE_COORDINATES_TABLE = "create table " + COORDIATES_TABLE_NAME + " (" + COORDIATES_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            ACTIVITY_COL3 + " REAL NOT NULL, " + COORDIATES_COL4 + " REAL NOT NULL," + COORDIATES_COL2 + " INTEGER NOT NULL, " +
+            "FOREIGN KEY (" + COORDIATES_COL2 + ") REFERENCES " + ACTIVITY_TABLE_NAME + "(" + ACTIVITY_COL1 + "));";
+
     // Initialising drop user table query
     public static final String DROP_USER_TABLE = "DROP TABLE IF EXISTS " + ACTIVITY_TABLE_NAME;
 
     // Initialising drop user table query
     public static final String DROP_ACTIVITY_TABLE = "DROP TABLE IF EXISTS " + ACTIVITY_TABLE_NAME;
+
+    // Initialising drop coordinates table query
+    public static final String DROP_COORDINATES_TABLE = "DROP TABLE IF EXISTS " + ACTIVITY_TABLE_NAME;
 
     public DataBaseHelper(@Nullable Context context) {
         // Initialising database
@@ -59,6 +75,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         //Creating table definition
         db.execSQL(CREATE_USER_TABLE);
         db.execSQL(CREATE_ACTIVITY_TABLE);
+        db.execSQL(CREATE_COORDINATES_TABLE);
     }
 
     @Override
@@ -66,14 +83,21 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         // updating table definition
         db.execSQL(DROP_USER_TABLE);
         db.execSQL(DROP_ACTIVITY_TABLE);
+        db.execSQL(DROP_COORDINATES_TABLE);
         onCreate(db);
     }
 
+    /**
+     * Method to populate user data in user table
+     * only if data doesn't exists in table already
+     */
     public void populateUserData() {
+        // statically created user data
         List<User> users = new ArrayList<User>();
-        users.add(new User("ankit", "123456"));
-        users.add(new User("karishma", "admin"));
-        users.add(new User("kaushal", "12345"));
+        users.add(new User("ankitjshah99@gmail.com", "123456"));
+        users.add(new User("rajat@gmail.com", "admin"));
+        users.add(new User("kaushal@gmail.com", "12345"));
+        users.add(new User("unnati@gmail.com", "12345"));
 
         if (!checkIfUserDataExists()) {
             insertUserRecords(users);
@@ -130,89 +154,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return user;
     }
 
+    /**
+     * Code to delete captured image from the database
+     *
+     * @param row reflects uid of image stored
+     */
     public void deleteEntry(long row) {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         sqLiteDatabase.delete(ACTIVITY_TABLE_NAME, ACTIVITY_COL1 + "=" + row, null);
     }
-    /*public boolean insertGrade(User grade) {
-     *//*
-        Code to insert data into database
-        values are assigned to fields in key - value pair with the help of content values
-         *//*
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COL2, grade.getFirstName());
-        contentValues.put(COL3, grade.getLastName());
-        contentValues.put(COL4, grade.getCourseName());
-        contentValues.put(COL5, grade.getCredit());
-        contentValues.put(COL6, grade.getMarks());
-
-        long result = db.insert(CREATE_USER_TABLE, null, contentValues);
-
-        return result != -1;
-    }
-
-    public Cursor viewGrades() {
-        *//*
-        Code to select all data from the database
-         *//*
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor;
-        cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
-
-        if (cursor != null) {
-            cursor.moveToFirst();
-        }
-        return cursor;
-    }
-
-    public Integer deleteGrade(int id) {
-    *//*
-        COde to delete records based on the id from the database
-     *//*
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME, " id = " + id, null);
-    }
-
-    public Cursor searchGrade(String value, String filter) {
-        *//*
-        Code to search database records based on filters selected by users
-        for example if filter is id then numeric id value will be provided
-                    if course is selected then course code will be provided
-                        by user from spinner on the screen
-         *//*
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor;
-        if ("id".equalsIgnoreCase(filter)) {
-
-            cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " where id = " + Integer.parseInt(value), null);
-        } else {
-
-            cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " where course = " + "'" + value + "'", null);
-
-        }
-
-        if (cursor != null) {
-            cursor.moveToFirst();
-        }
-        return cursor;
-    }
-
-    public int updateGrade(Grades grade) {
-        *//*
-        Code to update data into database
-        values are assigned to fields in key - value pair with the help of content values
-         *//*
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COL2, grade.getFirstName());
-        contentValues.put(COL3, grade.getLastName());
-        contentValues.put(COL4, grade.getCourseName());
-        contentValues.put(COL5, grade.getCredit());
-        contentValues.put(COL6, grade.getMarks());
-
-        int numRows = db.update(TABLE_NAME, contentValues, " id = " + grade.getId(), null);
-        return numRows;
-
-    }*/
 }

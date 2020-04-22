@@ -6,13 +6,10 @@
 
     <Button
         android:id="@+id/btnSaveImg"
-        android:layout_width="273dp"
-        android:layout_height="114dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="43.30dp"
-        android:layout_marginTop="43.30dp"
-        android:layout_marginEnd="43.30dp"
-        android:layout_marginBottom="43.30dp"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="15dp"
         android:background="@color/gray"
         android:text="Save Image"
         android:textAlignment="center"
@@ -20,21 +17,49 @@
 
     <Button
         android:id="@+id/btnViewImg"
-        android:layout_width="285dp"
-        android:layout_height="109dp"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
         android:layout_below="@id/btnSaveImg"
-        android:layout_gravity="center"
-        android:layout_marginStart="43.30dp"
-        android:layout_marginLeft="43.30dp"
-        android:layout_marginTop="43.30dp"
-        android:layout_marginEnd="43.30dp"
-        android:layout_marginRight="43.30dp"
-        android:layout_marginBottom="43.30dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
         android:background="@color/gray"
         android:text="View Image"
         android:textAlignment="center"
-        android:textSize="24sp">
+        android:textSize="24sp" />
 
-    </Button>
+    <Button
+        android:id="@+id/btnStartTrack"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_below="@id/btnViewImg"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@color/gray"
+        android:text="Start Tracking"
+        android:textAlignment="center"
+        android:textSize="24sp" />
 
+    <Button
+        android:id="@+id/btnStopTrack"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_below="@id/btnStartTrack"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@color/gray"
+        android:text="Stop Tracking"
+        android:textAlignment="center"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_below="@id/btnStopTrack"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@color/gray"
+        android:text="Logout"
+        android:textAlignment="center"
+        android:textSize="24sp" />
 </RelativeLayout>

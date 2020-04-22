@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -22,6 +23,7 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.msd.finalproject.CameraActivity;
+import com.msd.finalproject.LoginActivity;
 import com.msd.finalproject.R;
 import com.msd.finalproject.helper.DataBaseHelper;
 
@@ -32,13 +34,15 @@ import java.util.Date;
 public class CameraFragment extends Fragment {
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
-    Button btnSaveImg, btnViewImg;
+    Button btnSaveImg, btnViewImg, btnStartTrack, btnStopTrack, btnLogout;
     //Bitmap photo;
     String photo;
     DataBaseHelper databaseHandler;
     Bitmap theImage;
     private String loggedInUser = null;
     private SQLiteDatabase db;
+    SharedPreferences sp;
+
 
     @Nullable
     @Override
@@ -49,6 +53,9 @@ public class CameraFragment extends Fragment {
         // imageView =view. findViewById(R.id.imageView1);
         btnSaveImg = view.findViewById(R.id.btnSaveImg);
         btnViewImg = view.findViewById(R.id.btnViewImg);
+        btnStartTrack = view.findViewById(R.id.btnStartTrack);
+        btnStopTrack = view.findViewById(R.id.btnStopTrack);
+        btnLogout = view.findViewById(R.id.btnLogout);
         databaseHandler = new DataBaseHelper(getContext());
 
         btnSaveImg.setOnClickListener(
@@ -72,6 +79,31 @@ public class CameraFragment extends Fragment {
                 ((CameraActivity) getActivity()).loadFragment(new LocalFragment(), true);
             }
         });
+
+        btnStartTrack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((CameraActivity) getActivity()).loadFragment(new FragmentTrackLocation(), true);
+            }
+        });
+
+        btnStopTrack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((CameraActivity) getActivity()).loadFragment(new FragmentTrackLocation(), true);
+            }
+        });
+
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sp = getActivity().getSharedPreferences("login", getContext().MODE_PRIVATE);
+                sp.edit().putBoolean("logged", false).apply();
+                Intent i = new Intent(getContext(), LoginActivity.class);
+                startActivity(i);
+            }
+        });
+
         return view;
     }
 

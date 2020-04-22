@@ -1,6 +1,7 @@
 package com.msd.finalproject;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -19,11 +20,24 @@ public class LoginActivity extends AppCompatActivity {
     DataBaseHelper dbh = null;
     User user = null;
 
+    SharedPreferences sp;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         populateUserTable();
+
+        sp = getSharedPreferences("login", MODE_PRIVATE);
+
+        if (sp.getBoolean("logged", true)) {
+            String userName = sp.getString("userName", "");
+            String password = sp.getString("password", "");
+            User user = dbh.validateUserCredentials(userName, password);
+            openMainActivity(user);
+        }
+
         btnLogin = findViewById(R.id.btnLogin);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
@@ -51,7 +65,11 @@ public class LoginActivity extends AppCompatActivity {
 
         if (user.getId() > 0) {
 
-            Toast.makeText(getApplicationContext(), "Login Successfull", Toast.LENGTH_SHORT).show();
+            sp.edit().putString("userName", userName).apply();
+            sp.edit().putString("password", password).apply();
+            sp.edit().putBoolean("logged", true).apply();
+
+            Toast.makeText(getApplicationContext(), "Login Successful", Toast.LENGTH_SHORT).show();
             openMainActivity(user);
 
         } else {
