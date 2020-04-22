@@ -1,8 +1,10 @@
 package com.msd.finalproject.fragment;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,16 +15,22 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.msd.finalproject.R;
+
+import java.util.List;
 
 public class FragmentTrackLocation extends Fragment implements
         GoogleMap.OnMyLocationButtonClickListener,
@@ -72,19 +80,14 @@ public class FragmentTrackLocation extends Fragment implements
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        /*fusedLocationProviderClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
+        if (checkLocationPermission()) {
 
-                // Add a marker in Sydney and move the camera
-                LatLng sydney = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-            }
-        });*/
-        mMap.setOnMyLocationButtonClickListener(this);
-        mMap.setOnMyLocationClickListener(this);
-        checkLocationPermission();
+            Log.e("location", "location = " + getLastKnownLocation().getLatitude() + " == " + getLastKnownLocation().getLongitude());
+            LatLng sydney = new LatLng(getLastKnownLocation().getLatitude(), getLastKnownLocation().getLongitude());
+            mMap.addMarker(new MarkerOptions().position(sydney));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 18));
+
+        }
     }
 
     private void StoreLocationDetails() {
@@ -94,25 +97,25 @@ public class FragmentTrackLocation extends Fragment implements
     /**
      * Enables the My Location layer if the fine location permission has been granted.
      */
-    public void checkLocationPermission() {
-        Log.e("permission", "location permission checking called1");
+    public Boolean checkLocationPermission() {
+
         if (getActivity().checkSelfPermission(
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            Log.e("permission", "location permission checking called2");
             if (getActivity().shouldShowRequestPermissionRationale(
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
-                Log.e("permission", "location permission checking called3");
             } else {
                 getActivity().requestPermissions(
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         LOCATION_PERMISSION_REQUEST_CODE);
-                Log.e("permission", "location permission checking called4");
             }
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -128,5 +131,24 @@ public class FragmentTrackLocation extends Fragment implements
     public void onMyLocationClick(@NonNull Location location) {
         Toast.makeText(getContext(), "Current location:\n" + location, Toast.LENGTH_LONG).show();
         Log.e("data", "Current location:\n" + location);
+    }
+
+    private Location getLastKnownLocation() {
+        Location l = null;
+        LocationManager mLocationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                l = mLocationManager.getLastKnownLocation(provider);
+            }
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
     }
 }

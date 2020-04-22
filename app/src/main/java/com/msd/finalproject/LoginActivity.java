@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
         sp = getSharedPreferences("login", MODE_PRIVATE);
 
-        if (sp.getBoolean("logged", true)) {
+        if (sp.getBoolean("logged", false)) {
             String userName = sp.getString("userName", "");
             String password = sp.getString("password", "");
             User user = dbh.validateUserCredentials(userName, password);

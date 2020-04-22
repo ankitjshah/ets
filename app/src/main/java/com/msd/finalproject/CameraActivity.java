@@ -16,13 +16,15 @@ public class CameraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         loggedInUser = getIntent().getStringExtra("loggedInUser");
-        loadFragment(new CameraFragment(), false);
+        loadFragment(new CameraFragment(), null, false);
     }
 
-    public void loadFragment(Fragment fragment, Boolean bool) {
+    public void loadFragment(Fragment fragment, String activityId, Boolean bool) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         Bundle bundle = new Bundle();
         bundle.putString("loggedInUserId", loggedInUser);
+        if (activityId != null)
+            bundle.putString("userActivityId", activityId);
         fragment.setArguments(bundle);
         transaction.replace(R.id.frameLayout, fragment);
         if (bool)

@@ -10,7 +10,9 @@ import androidx.annotation.Nullable;
 
 import com.msd.finalproject.model.User;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
@@ -152,6 +154,20 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         return user;
+    }
+
+    public Long storeActivityDetails(String loggedInUser, String encodedImage) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String date = sdf.format(new Date());
+        ContentValues cv = new ContentValues();
+        cv.put(DataBaseHelper.ACTIVITY_COL3, encodedImage);
+        cv.put(DataBaseHelper.ACTIVITY_COL2, loggedInUser);
+        cv.put(DataBaseHelper.ACTIVITY_COL4, date);
+
+        return db.insert(DataBaseHelper.ACTIVITY_TABLE_NAME, null, cv);
+
     }
 
     /**

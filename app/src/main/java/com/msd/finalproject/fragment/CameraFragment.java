@@ -2,11 +2,10 @@ package com.msd.finalproject.fragment;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentValues;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,8 +27,6 @@ import com.msd.finalproject.R;
 import com.msd.finalproject.helper.DataBaseHelper;
 
 import java.io.ByteArrayOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class CameraFragment extends Fragment {
     private static final int CAMERA_REQUEST = 1888;
@@ -39,11 +36,11 @@ public class CameraFragment extends Fragment {
     String photo;
     DataBaseHelper databaseHandler;
     Bitmap theImage;
-    private String loggedInUser = null;
-    private SQLiteDatabase db;
     SharedPreferences sp;
+    private String loggedInUser = null;
 
-
+    Bundle bundle = null;
+    Long activityId = null;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,18 +54,25 @@ public class CameraFragment extends Fragment {
         btnStopTrack = view.findViewById(R.id.btnStopTrack);
         btnLogout = view.findViewById(R.id.btnLogout);
         databaseHandler = new DataBaseHelper(getContext());
-
+        bundle = new Bundle();
         btnSaveImg.setOnClickListener(
                 new View.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onClick(View v) {
-                        if (getActivity().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
-                        } else {
-                            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                            startActivityForResult(cameraIntent, CAMERA_REQUEST);
 
+                        if (activityId == null) {
+
+                            if (getActivity().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                                requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+                            } else {
+                                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+
+                            }
+
+                        } else {
+                            showActivityIdExistsAlert();
                         }
                     }
                 });
@@ -76,21 +80,42 @@ public class CameraFragment extends Fragment {
         btnViewImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((CameraActivity) getActivity()).loadFragment(new LocalFragment(), true);
+                if (activityId != null) {
+
+                    ((CameraActivity) getActivity()).loadFragment(new LocalFragment(), String.valueOf(activityId), true);
+
+                } else {
+
+                    showActivityIdNotExistsAlert();
+                }
             }
         });
 
         btnStartTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((CameraActivity) getActivity()).loadFragment(new FragmentTrackLocation(), true);
+                if (activityId != null) {
+
+                    ((CameraActivity) getActivity()).loadFragment(new FragmentTrackLocation(), String.valueOf(activityId), true);
+
+                } else {
+
+                    showActivityIdNotExistsAlert();
+                }
             }
         });
 
         btnStopTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((CameraActivity) getActivity()).loadFragment(new FragmentTrackLocation(), true);
+                if (activityId != null) {
+
+                    ((CameraActivity) getActivity()).loadFragment(new FragmentTrackLocation(), String.valueOf(activityId), true);
+
+                } else {
+
+                    showActivityIdNotExistsAlert();
+                }
             }
         });
 
@@ -108,21 +133,31 @@ public class CameraFragment extends Fragment {
     }
 
     private void setDataToDataBase() {
-        db = databaseHandler.getWritableDatabase();
-        Intent intent = getActivity().getIntent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String date = sdf.format(new Date());
-        ContentValues cv = new ContentValues();
-        cv.put(DataBaseHelper.ACTIVITY_COL3, getEncodedString(theImage));
-        cv.put(DataBaseHelper.ACTIVITY_COL2, loggedInUser);
-        cv.put(DataBaseHelper.ACTIVITY_COL4, date);
+        activityId = databaseHandler.storeActivityDetails(loggedInUser, getEncodedString(theImage));
 
-        long id = db.insert(DataBaseHelper.ACTIVITY_TABLE_NAME, null, cv);
-        if (id < 0) {
+        if (activityId < 0) {
             Toast.makeText(getContext(), "Something went wrong. Please try again later...", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(getContext(), "Add successful", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void showActivityIdExistsAlert() {
+        new AlertDialog.Builder(this.getContext())
+                .setTitle("Activity Started")
+                .setMessage("Activity Has already been started. Please Initiate Tracking")
+                .setPositiveButton("OK", null)
+                .create()
+                .show();
+    }
+
+    private void showActivityIdNotExistsAlert() {
+        new AlertDialog.Builder(this.getContext())
+                .setTitle("Activity Not Created")
+                .setMessage("Please Capture your Photo before initiating Tracking or Viewing Image.")
+                .setPositiveButton("OK", null)
+                .create()
+                .show();
     }
 
     /**
