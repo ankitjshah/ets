@@ -1,5 +1,6 @@
 package com.msd.finalproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -9,12 +10,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.msd.finalproject.helper.DataBaseHelper;
+import com.msd.finalproject.model.User;
 
 public class LoginActivity extends AppCompatActivity {
 
     EditText etEmail, etPassword;
     Button btnLogin;
     DataBaseHelper dbh = null;
+    User user = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +38,21 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void validateUser(String userName, String password) {
-        Boolean isAuthenticated = dbh.validateUserCredentials(userName, password);
+    public void openMainActivity(User user) {
+        Intent i = new Intent(LoginActivity.this, CameraActivity.class);
 
-        if (isAuthenticated) {
+        i.putExtra("loggedInUser", String.valueOf(user.getId()));
+
+        startActivity(i);
+    }
+
+    private void validateUser(String userName, String password) {
+        User user = dbh.validateUserCredentials(userName, password);
+
+        if (user.getId() > 0) {
 
             Toast.makeText(getApplicationContext(), "Login Successfull", Toast.LENGTH_SHORT).show();
+            openMainActivity(user);
 
         } else {
 

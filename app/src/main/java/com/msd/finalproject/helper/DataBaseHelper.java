@@ -28,13 +28,26 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String USER_COL2 = "username";
     public static final String USER_COL3 = "password";
 
+    public static final String ACTIVITY_TABLE_NAME = "Activity";
+    public static final String ACTIVITY_COL1 = "id";
+    public static final String ACTIVITY_COL2 = "userId";
+    public static final String ACTIVITY_COL3 = "imagePath";
+    public static final String ACTIVITY_COL4 = "createdAt";
+
     // Initialising create user table query
     public static final String CREATE_USER_TABLE = "create table " + USER_TABLE_NAME + "(" + USER_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             USER_COL2 + " TEXT NOT NULL, " + USER_COL3 + " TEXT NOT NULL);";
 
+    // Initialising create activity table query
+    public static final String CREATE_ACTIVITY_TABLE = "create table " + ACTIVITY_TABLE_NAME + " (" + ACTIVITY_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            ACTIVITY_COL3 + " TEXT NOT NULL, " + ACTIVITY_COL4 + " TEXT NOT NULL," + ACTIVITY_COL2 + " INTEGER NOT NULL, " +
+            "FOREIGN KEY (" + ACTIVITY_COL2 + ") REFERENCES " + USER_TABLE_NAME + "(" + USER_COL1 + "));";
 
     // Initialising drop user table query
-    public static final String DROP_USER_TABLE = "DROP TABLE IF EXISTS " + USER_TABLE_NAME;
+    public static final String DROP_USER_TABLE = "DROP TABLE IF EXISTS " + ACTIVITY_TABLE_NAME;
+
+    // Initialising drop user table query
+    public static final String DROP_ACTIVITY_TABLE = "DROP TABLE IF EXISTS " + ACTIVITY_TABLE_NAME;
 
     public DataBaseHelper(@Nullable Context context) {
         // Initialising database
@@ -45,12 +58,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         //Creating table definition
         db.execSQL(CREATE_USER_TABLE);
+        db.execSQL(CREATE_ACTIVITY_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // updating table definition
         db.execSQL(DROP_USER_TABLE);
+        db.execSQL(DROP_ACTIVITY_TABLE);
         onCreate(db);
     }
 
@@ -98,12 +113,26 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     /*
     Validating user credentials to authorise the login process
     */
-    public Boolean validateUserCredentials(String userName, String password) {
+    public User validateUserCredentials(String userName, String password) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + USER_TABLE_NAME + " where userName = " + "'" + userName + "'" + "AND password = " + "'" + password + "'", null);
 
-        return cursor.getCount() > 0;
+        User user = new User();
+        if (cursor.moveToFirst()) {
+            do {
+                // adding authenticated user's data to object
+                user.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                user.setPassword(cursor.getString(cursor.getColumnIndex("password")));
+                user.setUserName(cursor.getString(cursor.getColumnIndex("username")));
+            } while (cursor.moveToNext());
+        }
+        return user;
+    }
+
+    public void deleteEntry(long row) {
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.delete(ACTIVITY_TABLE_NAME, ACTIVITY_COL1 + "=" + row, null);
     }
     /*public boolean insertGrade(User grade) {
      *//*

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <Button
+        android:id="@+id/btnSaveImg"
+        android:layout_width="273dp"
+        android:layout_height="114dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="43.30dp"
+        android:layout_marginTop="43.30dp"
+        android:layout_marginEnd="43.30dp"
+        android:layout_marginBottom="43.30dp"
+        android:background="@color/gray"
+        android:text="Save Image"
+        android:textAlignment="center"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnViewImg"
+        android:layout_width="285dp"
+        android:layout_height="109dp"
+        android:layout_below="@id/btnSaveImg"
+        android:layout_gravity="center"
+        android:layout_marginStart="43.30dp"
+        android:layout_marginLeft="43.30dp"
+        android:layout_marginTop="43.30dp"
+        android:layout_marginEnd="43.30dp"
+        android:layout_marginRight="43.30dp"
+        android:layout_marginBottom="43.30dp"
+        android:background="@color/gray"
+        android:text="View Image"
+        android:textAlignment="center"
+        android:textSize="24sp">
+
+    </Button>
+
+</RelativeLayout>
