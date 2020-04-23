@@ -39,7 +39,6 @@ public class CameraFragment extends Fragment {
     SharedPreferences sp;
     private String loggedInUser = null;
 
-    Bundle bundle = null;
     Long activityId = null;
     @Nullable
     @Override
@@ -54,7 +53,6 @@ public class CameraFragment extends Fragment {
         btnStopTrack = view.findViewById(R.id.btnStopTrack);
         btnLogout = view.findViewById(R.id.btnLogout);
         databaseHandler = new DataBaseHelper(getContext());
-        bundle = new Bundle();
         btnSaveImg.setOnClickListener(
                 new View.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.M)

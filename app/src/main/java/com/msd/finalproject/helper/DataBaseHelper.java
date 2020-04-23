@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Location;
 
 import androidx.annotation.Nullable;
 
@@ -55,7 +56,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     // Initialising create activity table query
     public static final String CREATE_COORDINATES_TABLE = "create table " + COORDIATES_TABLE_NAME + " (" + COORDIATES_COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            ACTIVITY_COL3 + " REAL NOT NULL, " + COORDIATES_COL4 + " REAL NOT NULL," + COORDIATES_COL2 + " INTEGER NOT NULL, " +
+            COORDIATES_COL3 + " REAL NOT NULL, " + COORDIATES_COL4 + " REAL NOT NULL," + COORDIATES_COL2 + " INTEGER NOT NULL, " +
             "FOREIGN KEY (" + COORDIATES_COL2 + ") REFERENCES " + ACTIVITY_TABLE_NAME + "(" + ACTIVITY_COL1 + "));";
 
     // Initialising drop user table query
@@ -167,6 +168,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(DataBaseHelper.ACTIVITY_COL4, date);
 
         return db.insert(DataBaseHelper.ACTIVITY_TABLE_NAME, null, cv);
+
+    }
+
+    public Long storeActivityCoordinates(Location location, Integer activityId) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(DataBaseHelper.COORDIATES_COL3, location.getLongitude());
+        cv.put(DataBaseHelper.COORDIATES_COL2, activityId);
+        cv.put(DataBaseHelper.COORDIATES_COL4, location.getLatitude());
+
+        return db.insert(DataBaseHelper.COORDIATES_TABLE_NAME, null, cv);
 
     }
 

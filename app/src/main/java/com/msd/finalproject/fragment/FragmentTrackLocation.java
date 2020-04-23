@@ -18,17 +18,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.msd.finalproject.R;
+import com.msd.finalproject.helper.DataBaseHelper;
 
 import java.util.List;
 
@@ -45,14 +42,10 @@ public class FragmentTrackLocation extends Fragment implements
      * @see #onRequestPermissionsResult(int, String[], int[])
      */
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private FusedLocationProviderClient fusedLocationProviderClient;
-    private boolean mPermissionDenied = false;
     private GoogleMap mMap;
-    private SupportMapFragment mapFragment;
-    private LocationRequest mLocationRequest;
-    private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
-    private Marker mCurrLocationMarker;
+    DataBaseHelper databaseHandler;
+
+    String userActivityId = null;
 
     @Nullable
     @Override
@@ -60,7 +53,9 @@ public class FragmentTrackLocation extends Fragment implements
         View view = inflater.inflate(R.layout.activity_map, container, false);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-
+        databaseHandler = new DataBaseHelper(getContext());
+        userActivityId = getArguments().getString("userActivityId");
+        Log.e("Activity", "activity id = " + userActivityId);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
@@ -81,17 +76,23 @@ public class FragmentTrackLocation extends Fragment implements
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         if (checkLocationPermission()) {
-
-            Log.e("location", "location = " + getLastKnownLocation().getLatitude() + " == " + getLastKnownLocation().getLongitude());
-            LatLng sydney = new LatLng(getLastKnownLocation().getLatitude(), getLastKnownLocation().getLongitude());
-            mMap.addMarker(new MarkerOptions().position(sydney));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 18));
-
+            Location location = getLastKnownLocation();
+            Log.e("location", "location = " + location.getLatitude() + " == " + location.getLongitude());
+            LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(loc));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 18));
+            storeLocationDetails(location);
         }
     }
 
-    private void StoreLocationDetails() {
+    private void storeLocationDetails(Location location) {
+        Long coordinateId = databaseHandler.storeActivityCoordinates(location, Integer.valueOf(userActivityId));
 
+        if (coordinateId < 0) {
+            Toast.makeText(getContext(), "Something went wrong. Please try again later...", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getContext(), "Coordinates Added successfully", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
