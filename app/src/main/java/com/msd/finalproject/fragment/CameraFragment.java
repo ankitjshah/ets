@@ -31,7 +31,7 @@ import java.io.ByteArrayOutputStream;
 public class CameraFragment extends Fragment {
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
-    Button btnSaveImg, btnViewImg, btnStartTrack, btnStopTrack, btnLogout;
+    Button btnSaveImg, btnViewImg, btnStartTrack, btnStopTrack, btnLogout, btnShowRecent;
     //Bitmap photo;
     String photo;
     DataBaseHelper databaseHandler;
@@ -40,6 +40,7 @@ public class CameraFragment extends Fragment {
     private String loggedInUser = null;
 
     Long activityId = null;
+    Boolean isActivityStarted = false;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -51,6 +52,7 @@ public class CameraFragment extends Fragment {
         btnViewImg = view.findViewById(R.id.btnViewImg);
         btnStartTrack = view.findViewById(R.id.btnStartTrack);
         btnStopTrack = view.findViewById(R.id.btnStopTrack);
+        btnShowRecent = view.findViewById(R.id.btnShowRecent);
         btnLogout = view.findViewById(R.id.btnLogout);
         databaseHandler = new DataBaseHelper(getContext());
         btnSaveImg.setOnClickListener(
@@ -92,13 +94,44 @@ public class CameraFragment extends Fragment {
         btnStartTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (activityId != null) {
-
+                if (activityId != null && !isActivityStarted) {
+                    isActivityStarted = true;
                     ((CameraActivity) getActivity()).loadFragment(new FragmentTrackLocation(), String.valueOf(activityId), true);
 
                 } else {
 
-                    showActivityIdNotExistsAlert();
+                    if (isActivityStarted) {
+
+                        showActivityStartedsAlert();
+
+                    } else {
+
+                        showActivityIdNotExistsAlert();
+
+                    }
+                }
+            }
+        });
+
+        btnShowRecent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (activityId != null && !isActivityStarted) {
+
+                    ((CameraActivity) getActivity()).loadFragment(new MapFragment(), String.valueOf(activityId), true);
+
+                } else {
+
+                    if (isActivityStarted) {
+
+                        showActivityStartedsAlert();
+
+                    } else {
+
+                        showActivityIdNotExistsAlert();
+
+                    }
+
                 }
             }
         });
@@ -106,12 +139,11 @@ public class CameraFragment extends Fragment {
         btnStopTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (activityId != null) {
-
+                if (activityId != null && isActivityStarted) {
+                    isActivityStarted = false;
                     ((CameraActivity) getActivity()).loadFragment(new FragmentTrackLocation(), String.valueOf(activityId), true);
 
                 } else {
-
                     showActivityIdNotExistsAlert();
                 }
             }
@@ -144,6 +176,15 @@ public class CameraFragment extends Fragment {
         new AlertDialog.Builder(this.getContext())
                 .setTitle("Activity Started")
                 .setMessage("Activity Has already been started. Please Initiate Tracking")
+                .setPositiveButton("OK", null)
+                .create()
+                .show();
+    }
+
+    private void showActivityStartedsAlert() {
+        new AlertDialog.Builder(this.getContext())
+                .setTitle("Activity Started")
+                .setMessage("Please wait!! Activity is in Progress")
                 .setPositiveButton("OK", null)
                 .create()
                 .show();

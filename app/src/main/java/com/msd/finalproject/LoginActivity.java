@@ -77,11 +77,13 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Invalid Login Data", Toast.LENGTH_SHORT).show();
 
         }
+        dbh.close();
     }
 
 
     private void populateUserTable() {
         dbh = new DataBaseHelper(this);
         dbh.populateUserData();
+        dbh.close();
     }
 }

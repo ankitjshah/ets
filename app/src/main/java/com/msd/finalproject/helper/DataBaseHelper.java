@@ -171,6 +171,24 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public Cursor fetchActivityCoordinatesById(String activityId) {
+        /*
+        Code to search database records based on filters selected by users
+        for example if filter is id then numeric id value will be provided
+                    if course is selected then course code will be provided
+                        by user from spinner on the screen
+         */
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + COORDIATES_TABLE_NAME + " where " + COORDIATES_COL2 + " = " + Integer.parseInt(activityId), null);
+
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+        }
+        return cursor;
+    }
+
     public Long storeActivityCoordinates(Location location, Integer activityId) {
 
         SQLiteDatabase db = this.getWritableDatabase();
