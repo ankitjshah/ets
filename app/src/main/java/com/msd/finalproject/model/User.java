@@ -1,5 +1,8 @@
 package com.msd.finalproject.model;
 
+/**
+ * User Model to manage user's login details
+ */
 public class User {
     private int id;
 

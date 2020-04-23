@@ -2,6 +2,11 @@ package com.msd.finalproject.model;
 
 import java.util.Date;
 
+/**
+ * Activity model to Initiate activity
+ * it stores captured image, user's id
+ * and time when activity started
+ */
 public class Activity {
     private Integer id;
     private Integer userId;

@@ -28,6 +28,10 @@ import com.msd.finalproject.model.CurrentCoordinates;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * MapFragment is a Fragment used to display path from source to destination of user's travel
+ * It takes two different coordinates from user's recent activity and displays it ona map
+ */
 public class MapFragment extends Fragment implements OnMapReadyCallback, TaskLoadedCallback {
     Button getDirection;
     String userActivityId = null;

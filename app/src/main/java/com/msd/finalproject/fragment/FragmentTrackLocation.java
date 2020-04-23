@@ -29,6 +29,10 @@ import com.msd.finalproject.helper.DataBaseHelper;
 
 import java.util.List;
 
+/*
+ *FragmentTrackLocation to Capture user's coordinates while
+ * Starting and stoping the activity
+ */
 public class FragmentTrackLocation extends Fragment implements
         GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
@@ -53,7 +57,11 @@ public class FragmentTrackLocation extends Fragment implements
         View view = inflater.inflate(R.layout.activity_map, container, false);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
+        // Initializing DatabaseHandler
         databaseHandler = new DataBaseHelper(getContext());
+
+        // Getting User's current Activity Id from parent activity
         userActivityId = getArguments().getString("userActivityId");
         Log.e("Activity", "activity id = " + userActivityId);
         if (mapFragment != null) {
@@ -85,6 +93,15 @@ public class FragmentTrackLocation extends Fragment implements
         }
     }
 
+    /**
+     * Storing location details to the database
+     * Method gets called twice;
+     * Once when the user start activity
+     * and another
+     * when the user stops activity
+     *
+     * @param location
+     */
     private void storeLocationDetails(Location location) {
         Long coordinateId = databaseHandler.storeActivityCoordinates(location, Integer.valueOf(userActivityId));
 
@@ -134,6 +151,11 @@ public class FragmentTrackLocation extends Fragment implements
         Log.e("data", "Current location:\n" + location);
     }
 
+    /**
+     * Getting user's last known location
+     * with the help of Android SDK' location manager
+     * @return
+     */
     private Location getLastKnownLocation() {
         Location l = null;
         LocationManager mLocationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);

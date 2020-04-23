@@ -8,6 +8,10 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.msd.finalproject.fragment.CameraFragment;
 
+/**
+ * CameraActivity to load different fragments for different purposes
+ * based on the selection of user
+ */
 public class CameraActivity extends AppCompatActivity {
     private String loggedInUser = null;
 
@@ -21,6 +25,7 @@ public class CameraActivity extends AppCompatActivity {
 
     public void loadFragment(Fragment fragment, String activityId, Boolean bool) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        // Sharing data from activity to fragment
         Bundle bundle = new Bundle();
         bundle.putString("loggedInUserId", loggedInUser);
         if (activityId != null)

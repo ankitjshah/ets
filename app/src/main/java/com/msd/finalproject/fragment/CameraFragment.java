@@ -28,6 +28,11 @@ import com.msd.finalproject.helper.DataBaseHelper;
 
 import java.io.ByteArrayOutputStream;
 
+/**
+ * CameraFragment to allow user
+ * to manage activities after
+ * logging into the application
+ */
 public class CameraFragment extends Fragment {
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
@@ -41,6 +46,7 @@ public class CameraFragment extends Fragment {
 
     Long activityId = null;
     Boolean isActivityStarted = false;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,6 +61,11 @@ public class CameraFragment extends Fragment {
         btnShowRecent = view.findViewById(R.id.btnShowRecent);
         btnLogout = view.findViewById(R.id.btnLogout);
         databaseHandler = new DataBaseHelper(getContext());
+
+        /**
+         * Ask for permission and when persmissions are granted
+         * allow user to take pictures
+         */
         btnSaveImg.setOnClickListener(
                 new View.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -77,6 +88,11 @@ public class CameraFragment extends Fragment {
                     }
                 });
 
+
+        /**
+         * Initialise LocalFragment
+         * to diplay user's recently captured photo
+         */
         btnViewImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,6 +107,10 @@ public class CameraFragment extends Fragment {
             }
         });
 
+        /**
+         * Initialise FragmentTrackLocation
+         * to store starting coordinates
+         */
         btnStartTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,6 +133,11 @@ public class CameraFragment extends Fragment {
             }
         });
 
+        /**
+         * Initialise MapFragment
+         * shows user's starting and destination places
+         * by means of plyline on google map
+         */
         btnShowRecent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,6 +161,10 @@ public class CameraFragment extends Fragment {
             }
         });
 
+        /**
+         * Initialise FragmentTrackLocation
+         * to store destination coordinates
+         */
         btnStopTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -149,6 +178,9 @@ public class CameraFragment extends Fragment {
             }
         });
 
+        /**
+         *Code to perfrom logout functionality
+         */
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,6 +194,9 @@ public class CameraFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Initialize user's new activity records to Activity table
+     */
     private void setDataToDataBase() {
         activityId = databaseHandler.storeActivityDetails(loggedInUser, getEncodedString(theImage));
 
@@ -172,6 +207,13 @@ public class CameraFragment extends Fragment {
         }
     }
 
+
+    /**
+     * Show Alert if Activity Id already exists
+     * before starting new activity
+     * used to validate user's operations
+     * to reduce conflicts between modules
+     */
     private void showActivityIdExistsAlert() {
         new AlertDialog.Builder(this.getContext())
                 .setTitle("Activity Started")
@@ -181,6 +223,12 @@ public class CameraFragment extends Fragment {
                 .show();
     }
 
+    /**
+     * Show Alert if Activity Is already running
+     * before starting new activity
+     * used to validate user's operations
+     * to reduce conflicts between modules
+     */
     private void showActivityStartedsAlert() {
         new AlertDialog.Builder(this.getContext())
                 .setTitle("Activity Started")
@@ -190,6 +238,10 @@ public class CameraFragment extends Fragment {
                 .show();
     }
 
+    /**
+     * Show Alert if Activity Id doesn't exists
+     * or if the activity hasn't been started, yet
+     */
     private void showActivityIdNotExistsAlert() {
         new AlertDialog.Builder(this.getContext())
                 .setTitle("Activity Not Created")
@@ -238,7 +290,12 @@ public class CameraFragment extends Fragment {
         }
     }
 
-
+    /**
+     * Convert Bitmap to String
+     *
+     * @param bitmap
+     * @return base64 format string
+     */
     private String getEncodedString(Bitmap bitmap) {
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();

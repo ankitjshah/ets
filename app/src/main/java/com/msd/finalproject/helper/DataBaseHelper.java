@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * DataBaseHelper class Performs databse related operations
+ */
 public class DataBaseHelper extends SQLiteOpenHelper {
 
     // Creating Employee Tracking Database
@@ -157,6 +160,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return user;
     }
 
+    /**
+     * Stores Activity Details
+     *
+     * @param loggedInUser
+     * @param encodedImage
+     * @return
+     */
     public Long storeActivityDetails(String loggedInUser, String encodedImage) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -171,6 +181,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * Fetch Coordinates to display on map
+     * fetch by Activity Id
+     * @param activityId
+     * @return
+     */
     public Cursor fetchActivityCoordinatesById(String activityId) {
         /*
         Code to search database records based on filters selected by users
@@ -189,6 +205,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    /**
+     * Storing Coordinates for current activity
+     * @param location
+     * @param activityId
+     * @return
+     */
     public Long storeActivityCoordinates(Location location, Integer activityId) {
 
         SQLiteDatabase db = this.getWritableDatabase();

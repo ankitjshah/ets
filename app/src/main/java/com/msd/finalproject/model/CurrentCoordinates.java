@@ -1,5 +1,11 @@
 package com.msd.finalproject.model;
 
+/**
+ * Coordinates for user' activity
+ * It stores details twice;
+ * Once when activity starts
+ * and next when activity ends
+ */
 public class CurrentCoordinates {
     private Integer id;
 
